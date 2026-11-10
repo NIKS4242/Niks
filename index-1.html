@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="mr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>niks — Video Downloader</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#f8fafc;background:#0b1220}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0%,#1e3a5f 0,transparent 38%),#0b1220}
+    .wrap{max-width:760px;margin:auto;padding:56px 20px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:.2px}
+    .logo{width:38px;height:38px;border-radius:12px;background:#2563eb;display:grid;place-items:center}
+    .hero{text-align:center;margin:70px auto 28px}.hero h1{font-size:clamp(34px,7vw,54px);margin:0 0 12px}
+    .hero p{color:#a8b5c8;line-height:1.6;margin:0}
+    .panel{background:#111c2e;border:1px solid #26364e;border-radius:22px;padding:24px;box-shadow:0 22px 70px #0005}
+    label{display:block;font-size:14px;color:#cbd5e1;margin:0 0 9px}
+    .urlrow{display:flex;gap:10px}
+    input{min-width:0;flex:1;background:#0b1424;border:1px solid #34445d;border-radius:12px;padding:15px;color:white;font-size:15px;outline:none}
+    input:focus{border-color:#60a5fa}
+    button{border:0;border-radius:12px;background:#2563eb;color:white;font-weight:700;padding:0 20px;cursor:pointer}
+    button:hover{background:#1d4ed8} button:disabled{opacity:.5;cursor:not-allowed}
+    .quality{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+    .q{border:1px solid #34445d;border-radius:10px;padding:10px 14px;color:#cbd5e1;background:#0b1424;font-size:14px}
+    .q.active{border-color:#60a5fa;background:#172d4b;color:white}
+    .hint,.status{font-size:13px;color:#9fb0c7;line-height:1.55}
+    .status{margin-top:16px;min-height:22px}
+    .download{display:none;margin-top:12px;padding:14px 18px;text-align:center;text-decoration:none;border-radius:12px;background:#15803d;color:white;font-weight:700}
+    .foot{margin:24px auto 0;text-align:center;color:#8392a8;font-size:12px;line-height:1.6}
+    @media(max-width:560px){.wrap{padding-top:28px}.hero{margin-top:52px}.urlrow{flex-direction:column}button{padding:15px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand"><div class="logo">⬇</div><span>niks</span></div>
+    <section class="hero">
+      <h1>Video Downloader</h1>
+      <p>तुमच्या स्वतःच्या किंवा डाउनलोड करण्याची परवानगी असलेल्या व्हिडिओची थेट लिंक पेस्ट करा.</p>
+    </section>
+    <section class="panel">
+      <label for="videoUrl">व्हिडिओची थेट लिंक पेस्ट करा</label>
+      <div class="urlrow">
+        <input id="videoUrl" type="url" placeholder="https://example.com/my-video.mp4" autocomplete="url">
+        <button id="checkBtn">लिंक तपासा</button>
+      </div>
+      <div class="quality" aria-label="Available quality">
+        <span class="q active">मूळ गुणवत्ता</span>
+        <span class="q">480p*</span>
+        <span class="q">720p*</span>
+        <span class="q">1080p*</span>
+      </div>
+      <p class="hint">* 480p / 720p / 1080p पर्याय तेव्हाच उपलब्ध होतील जेव्हा व्हिडिओ स्रोत त्या गुणवत्ता आवृत्त्या देतो. या सुरुवातीच्या आवृत्तीत गुणवत्ता बदल/रूपांतरण केले जात नाही.</p>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <a id="downloadLink" class="download" href="#" rel="noopener">व्हिडिओ डाउनलोड करा</a>
+    </section>
+    <p class="foot">niks ही स्वतंत्र सेवा आहे. प्लॅटफॉर्मचे नियम, कॉपीराइट आणि गोपनीयता पाळा. DRM-संरक्षित किंवा परवानगी नसलेले व्हिडिओ डाउनलोड करू नका.</p>
+  </main>
+<script>
+const input = document.getElementById('videoUrl');
+const statusBox = document.getElementById('status');
+const downloadLink = document.getElementById('downloadLink');
+document.getElementById('checkBtn').addEventListener('click', () => {
+  downloadLink.style.display = 'none';
+  const raw = input.value.trim();
+  let url;
+  try { url = new URL(raw); } catch { statusBox.textContent = 'कृपया योग्य URL टाका.'; return; }
+  if (!['https:', 'http:'].includes(url.protocol)) {
+    statusBox.textContent = 'फक्त HTTP किंवा HTTPS लिंक वापरा.'; return;
+  }
+  const ext = url.pathname.toLowerCase().match(/\.(mp4|webm|mov|m4v|ogg)$/);
+  if (!ext) {
+    statusBox.textContent = 'ही थेट व्हिडिओ फाइलची लिंक दिसत नाही. वेबसाइट/सोशल-मीडिया पेज लिंक या आवृत्तीत समर्थित नाही.';
+    return;
+  }
+  downloadLink.href = url.href;
+  downloadLink.download = url.pathname.split('/').pop() || 'video';
+  downloadLink.style.display = 'block';
+  statusBox.textContent = 'थेट व्हिडिओ लिंक ओळखली. डाउनलोड बटण दाबा. ब्राउझर/सर्व्हरच्या नियमांनुसार फाइल नवीन टॅबमध्ये उघडू शकते.';
+});
+</script>
+</body>
+</html>
