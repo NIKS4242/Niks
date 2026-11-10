@@ -42,8 +42,14 @@
       <div class="urlrow">
         <input id="videoUrl" type="url" placeholder="https://example.com/my-video.mp4" autocomplete="url">
         <button id="checkBtn">लिंक तपासा</button>
+        <button type="button" id="copyBtn">📋 लिंक कॉपी</button>
+<button type="button" id="clearBtn">🧹 लिंक क्लिअर</button>
       </div>
-      <div class="quality" aria-label="Available quality">
+      <div class="quality">
+  <button type="button" class="q" data-quality="480">480p Download</button>
+  <button type="button" class="q" data-quality="720">720p Download</button>
+  <button type="button" class="q" data-quality="1080">1080p Download</button>
+</div>
         <span class="q active">मूळ गुणवत्ता</span>
         <span class="q">480p*</span>
         <span class="q">720p*</span>
@@ -76,6 +82,27 @@ document.getElementById('checkBtn').addEventListener('click', () => {
   downloadLink.download = url.pathname.split('/').pop() || 'video';
   downloadLink.style.display = 'block';
   statusBox.textContent = 'थेट व्हिडिओ लिंक ओळखली. डाउनलोड बटण दाबा. ब्राउझर/सर्व्हरच्या नियमांनुसार फाइल नवीन टॅबमध्ये उघडू शकते.';
+  
+});document.getElementById('copyBtn').addEventListener('click', async () => {
+  const text = input.value.trim();
+
+  if (!text) {
+    statusBox.textContent = 'आधी लिंक टाका!';
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    statusBox.textContent = 'लिंक कॉपी झाली!';
+  } catch (error) {
+    statusBox.textContent = 'लिंक कॉपी होऊ शकली नाही.';
+  }
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  input.value = '';
+  downloadLink.style.display = 'none';
+  statusBox.textContent = 'लिंक क्लिअर झाली!';
 });
 </script>
 </body>
